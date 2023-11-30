@@ -32,7 +32,6 @@ import Text.Printf
 keepA a b = a
 keepB a b = b
 
--- Functions to easily split inputs
 cpl a b = (a,b)
 
 couple [a,b] = (a,b)
@@ -57,6 +56,7 @@ groupFst = map keepFirst . groupBy ((==) `on` fst)
 splitComma :: String -> [String]
 splitComma = wordsWhen (==',')
 
+-- get a list of integers separated by ',' on the next line
 getInts :: IO [Int]
 getInts = do getLine >>= return . splitComma >>= return . map read
 
@@ -65,6 +65,7 @@ getInts = do getLine >>= return . splitComma >>= return . map read
 genhist :: (Ix a, Num b) => (a,a) -> [a] -> Array a b
 genhist bnds is = accumArray (+) 0 bnds [(i, 1) | i<-is, inRange bnds i]
 
+-- Functions to easily split inputs
 wordsWhen     :: (Char -> Bool) -> String -> [String]
 wordsWhen p s =  case dropWhile p s of
                       "" -> []
@@ -95,6 +96,9 @@ getCharMap = do
     let imap = listArray ((1,1), (height,width)) $ concat rows
     return imap
 
+-- reads from stdin a 2d array of boolean values
+-- takes as argument a function converting a char into a bool
+-- (e.g., '0' -> false, '1' -> true)
 getBoolMap :: (Char -> Bool) -> IO BoolMap
 getBoolMap chBool = do
     contents <- getContents
@@ -216,38 +220,47 @@ lookup' :: (Eq a) => a -> [(a,b)] -> b
 lookup' e l = fromJust $ lookup e l
 
 
+-----------------------
 --
 -- Parsing
 --
---
+-----------------------
 
+-- a regular word containing only alphabetic characters
 word :: T.ReadP String
 word = T.many1 $ T.satisfy isAlpha
 
 
+-- parses an classic "identifier" in programming languages
 parseIdent :: T.ReadP String
 parseIdent = do
     c <- T.satisfy isAlpha
     rst <- T.many $ T.satisfy isAlphaNum
     return $ c:rst
 
+
+-- an alphanumeric number, or '.' or '/'
 isAlnumDot c =
     isAlphaNum c || c == '.' || c == '/'
 
 
+-- parse a direction NSEW that uses "arrows": ^v><
 parseDir :: T.ReadP Cardir
 parseDir = do
     c <- T.char '<' <|> T.char '>' <|> T.char 'v' <|> T.char '^'
     return $ chDir c
 
+-- parse 'on/off' switches
 parseOnOff :: T.ReadP Bool
 parseOnOff = do
     s <- T.string "on" <|> T.string "off"
     return $ s == "on"
 
+-- parses an number
 number :: T.ReadP Int
 number = read <$> numberStr
 
+-- parses a string that represents a number
 numberStr :: T.ReadP String
 numberStr = do
     neg <- T.option ' ' (T.satisfy (=='-'))
@@ -255,6 +268,14 @@ numberStr = do
     return (neg:num)
 
 
+-- parses just a line return
+lineReturn = T.satisfy (=='\n')
+
+doubleLineReturn = lineReturn >> lineReturn
+
+
+-- generates a parser for a range of integer
+-- `str` is the string used for separating the two values
 genRange :: String -> T.ReadP (Int, Int)
 genRange str = do
     lo <- number
@@ -266,18 +287,27 @@ genRange str = do
 parseCoords :: T.ReadP (Coord)
 parseCoords = genRange ","
 
+-- parses a range such as "2..10"
 dotRange :: T.ReadP (Int, Int)
 dotRange = genRange ".."
 
+-- parses a range such as "2-10"
 dashRange :: T.ReadP (Int, Int)
 dashRange = genRange "-"
 
 
--- Graphs
+-- gets a parser and apply it to the contents in stdin
+-- returning the first match
+parseContents parser = do
+    contents <- getContents
+    let dat = T.readP_to_S parser contents
+    return $ fst . head $ dat
+
+-----------------------
 --
---o
+-- Graph manipulations
 --
---
+-----------------------
 
 
 
