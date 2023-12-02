@@ -53,6 +53,10 @@ groupFst = map keepFirst . groupBy ((==) `on` fst)
                 a = head al
 
 
+-- converts a single char digit to its integer value
+chrDigit c = assert (isDigit c) $ ord(c) - ord('0')
+
+
 splitComma :: String -> [String]
 splitComma = wordsWhen (==',')
 
