@@ -149,10 +149,10 @@ chDir 'v' = S
 chDir '<' = W
 chDir '>' = E
 
-dirSym N = '^'
-dirSym S = 'v'
-dirSym W = '<'
-dirSym E = '>'
+dirCh N = '^'
+dirCh S = 'v'
+dirCh W = '<'
+dirCh E = '>'
 
 opposite N = S
 opposite S = N
