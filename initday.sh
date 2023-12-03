@@ -34,12 +34,15 @@ fi
 
 echo -n "Enter filename for today's puzzle: "
 read execname
-filename=$execname.hs
-if [[ -e $filename ]]; then
-  echo "$filname already exists"
+haskname=$execname.hs
+pyname=$execname.py
+
+if [[ -e $haskname ]]; then
+  echo "$haskname already exists"
 else
-  echo "Copying template to ${filename}"
-  cp ../Haskell/template.hs ${filename}
+  echo "Copying template to ${haskname}"
+  cp ../Haskell/template.hs ${haskname}
+  cp ../Python/template.py ${pyname}
 fi
 
 if [[ -e "Makefile" ]]; then
@@ -47,11 +50,18 @@ if [[ -e "Makefile" ]]; then
 else
   echo "Creating Makefile"
   cat <<EOF > Makefile
-mine: ${filename}
-	runhaskell ${filename} < input-mine.txt
+mine: ${haskname}
+	runhaskell ${haskname} < input-mine.txt
 
 small: ${filename}
 	runhaskell ${filename} < input-small.txt
+
+pymine: ${pyname}
+	python3 ${pyname} < input-mine.txt
+
+pysmall: ${pyname}
+	python3 ${pyname} < input-small.txt
+
 
 
 opt: ${execname}
@@ -60,8 +70,8 @@ opt: ${execname}
 optsmall: ${execname}
 	./${execname} < input-small.txt
 
-${execname}: ${filename}
-	ghc -O2 ${filename} -o ${execname}
+${execname}: ${haskname}
+	ghc -O2 ${hasname} -o ${execname}
 
 clean:
 	haskell-clean-aux
