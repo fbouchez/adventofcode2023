@@ -35,19 +35,19 @@ strCol "blue" = Blue
 
 parseInput = do
     games <- sepBy1 parseGame lineReturn
+    skipSpaces
     eof
     return games
-
 
 parseGame = do
     string "Game "
     id <- number
-    string ": "
-    sets <- sepBy1 parseSets (string "; ")
+    colonSep
+    sets <- sepBy1 parseSets semicolSep
 
     return (id, sets)
 
-parseSets = sepBy1 parseColor (string ", ")
+parseSets = sepBy1 parseColor commaSep
 
 parseColor = do
     num <- number
@@ -55,23 +55,17 @@ parseColor = do
     w <- word
     return (num, strCol w)
 
-
-
-
 main :: IO ()
 main = do
     dat <- parseContents parseInput
     print dat
 
     let result = part1 dat
-
-    putStr "Résultat partie1 : "
-    print result
+    putStrLn $ "Résultat partie1 : " ++ show result
 
     let result2 = part2 dat
+    putStrLn $ "Résultat partie2 : " ++ show result2
 
-    putStr "Résultat partie2 : "
-    print result2
 
 part1 games = foldl addIfValid 0 games
   where
@@ -91,8 +85,7 @@ part1 games = foldl addIfValid 0 games
 
 part2 games = foldl addPower 0 games
   where
-    addPower pow (_, sets) =
-      pow + power sets
+    addPower pow (_, sets) = pow + power sets
 
     power sets = maxr * maxg * maxb
       where

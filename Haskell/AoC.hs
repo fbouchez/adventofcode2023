@@ -277,6 +277,12 @@ lineReturn = T.satisfy (=='\n')
 
 doubleLineReturn = lineReturn >> lineReturn
 
+-- separator: a char followed by spaces
+charSep c = T.char c >> T.skipSpaces
+
+commaSep = charSep ','
+colonSep = charSep ':'
+semicolSep = charSep ';'
 
 -- generates a parser for a range of integer
 -- `str` is the string used for separating the two values
