@@ -102,5 +102,5 @@ if [[ $ret -eq 1 ]]; then
 fi
 
 echo "Initial adding of files in git."
-git add AoC.hs ${filename} Makefile input-small.txt 
+git add AoC.hs ${haskname} ${pyname} Makefile input-small.txt 
 git ci -m 'Initial commit for $execname'
