@@ -26,17 +26,86 @@ import Text.Printf
 -- import Text.Scanf
 
 
+data Color = Red | Green | Blue deriving(Show, Eq)
 
--- If part1 and part2 are very different,
--- toggle which part to compute with this flag.
-part2 = False
+
+strCol "green" = Green
+strCol "red" = Red
+strCol "blue" = Blue
 
 parseInput = do
-    nums <- sepBy1 number skipSpaces
+    games <- sepBy1 parseGame lineReturn
     eof
-    return nums
+    return games
+
+
+parseGame = do
+    string "Game "
+    id <- number
+    string ": "
+    sets <- sepBy1 parseSets (string "; ")
+
+    return (id, sets)
+
+parseSets = sepBy1 parseColor (string ", ")
+
+parseColor = do
+    num <- number
+    skipSpaces
+    w <- word
+    return (num, strCol w)
+
+
+
 
 main :: IO ()
 main = do
     dat <- parseContents parseInput
     print dat
+
+    let result = part1 dat
+
+    putStr "Résultat partie1 : "
+    print result
+
+    let result2 = part2 dat
+
+    putStr "Résultat partie2 : "
+    print result2
+
+part1 games = foldl addIfValid 0 games
+  where
+    addIfValid acc (ident, sets) =
+      acc + if validSets sets then ident else 0
+
+    validSets sets = foldl accCheckSet True sets
+    accCheckSet flag set = foldl accCheckColor flag set
+
+    accCheckColor flag (num, col) = flag && checkCol col num
+
+    checkCol Red n   = n <= 12
+    checkCol Green n = n <= 13
+    checkCol Blue n  = n <= 14
+
+
+
+part2 games = foldl addPower 0 games
+  where
+    addPower pow (_, sets) =
+      pow + power sets
+
+    power sets = maxr * maxg * maxb
+      where
+        (maxr, maxg, maxb) = computeMaxCol sets
+        computeMaxCol sets = 
+          foldl accMaxCurrentSet  (0, 0, 0) sets
+
+        accMaxCurrentSet themax [] = themax
+        accMaxCurrentSet themax ((ncol, col):colors) =
+          accMaxCurrentSet (update themax col ncol) colors
+
+        update (mr, mg, mb) Red r = (max mr r, mg, mb)
+        update (mr, mg, mb) Green g = (mr, max mg g, mb)
+        update (mr, mg, mb) Blue b = (mr, mg, max mb b)
+
+
