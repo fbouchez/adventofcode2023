@@ -1,8 +1,8 @@
 mine: engine.hs
 	runhaskell engine.hs < input-mine.txt
 
-small: 
-	runhaskell  < input-small.txt
+small: engine.hs
+	runhaskell engine.hs  < input-small.txt
 
 pymine: engine.py
 	python3 engine.py < input-mine.txt

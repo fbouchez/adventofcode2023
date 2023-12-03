@@ -53,8 +53,8 @@ else
 mine: ${haskname}
 	runhaskell ${haskname} < input-mine.txt
 
-small: ${filename}
-	runhaskell ${filename} < input-small.txt
+small: ${haskname}
+	runhaskell ${haskname} < input-small.txt
 
 pymine: ${pyname}
 	python3 ${pyname} < input-mine.txt

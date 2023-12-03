@@ -38,5 +38,5 @@ parseInput = do
 
 main :: IO ()
 main = do
-    dat <- parseContents parseInput
+    dat <- getCharMap
     print dat
