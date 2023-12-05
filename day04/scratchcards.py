@@ -16,10 +16,12 @@ for line in sys.stdin:
     wins = [int(x) for x in win.split()]
     alls = [int(x) for x in all_.split()]
 
-    vrai = []
-    for w in wins:
-        if w in alls:
-            vrai.append(w)
+    # vrai = []
+    # for w in wins:
+        # if w in alls:
+            # vrai.append(w)
+    ## avec une compréhension de liste
+    vrai = [x for x in wins if x in alls]
 
     scratch.append(len(vrai))
 
