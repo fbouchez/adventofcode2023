@@ -1,12 +1,14 @@
 import sys
 
+# part2 = False
+part2 = True
+
 res1 = 0
 res2 = 0
 
+
 seeds = []
-
 current_map = None
-
 maps = {}
 
 
@@ -26,11 +28,17 @@ for line in sys.stdin:
 
         print("longueur:", len(s))
 
-        for i in range(len(s)//2):
-            st = s[2*i]
-            ln = s[2*i+1]
-            seeds.append((st, st+ln-1))
-        continue
+        if not part2:
+            for seed in s:
+                seeds.append((seed, seed))
+            continue
+
+        else:
+            for i in range(len(s)//2):
+                st = s[2*i]
+                ln = s[2*i+1]
+                seeds.append((st, st+ln-1))
+            continue
 
 
     if line.endswith("map:"):
@@ -166,6 +174,12 @@ locations = seedToLoc(sseeds)
 print(f"{locations=}")
 
 
-res2 = min(locations)
-# print ("Valeur partie 1:", res1)
-print ("Valeur partie 2:", res2)
+res = min(locations)
+
+if not part2:
+    print ("Valeur partie 1:", res[0])
+    print ("Partie2 désactivée")
+
+else:
+    print ("Partie1 désactivée")
+    print ("Valeur partie 2:", res[0])
