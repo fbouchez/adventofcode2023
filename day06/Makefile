@@ -4,11 +4,18 @@ mine: toy-boat-race.hs
 small: toy-boat-race.hs
 	runhaskell toy-boat-race.hs < input-small.txt
 
-pymine: toy-boat-race.py
+pmine: toy-boat-race.py
 	python3 toy-boat-race.py < input-mine.txt
 
-pysmall: toy-boat-race.py
+psmall: toy-boat-race.py
 	python3 toy-boat-race.py < input-small.txt
+
+psmalld: toy-boat-race.py
+	loopwait 'python3 toy-boat-race.py -d < input-small.txt' toy-boat-race.py
+
+pmined: toy-boat-race.py
+	loopwait 'python3 toy-boat-race.py -d < input-mine.txt' toy-boat-race.py
+
 
 
 
