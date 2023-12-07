@@ -30,6 +30,8 @@ if [[ -L $f ]]; then
 else
   echo "Linking $f"
   ln -s ../Haskell/AoC.hs
+  echo "Linking AoC.py"
+  ln -s ../Python/AoC.py
 fi
 
 echo -n "Enter filename for today's puzzle: "
@@ -43,6 +45,7 @@ else
   echo "Copying template to ${haskname}"
   cp ../Haskell/template.hs ${haskname}
   cp ../Python/template.py ${pyname}
+  chmod +x ${pyname}
 fi
 
 if [[ -e "Makefile" ]]; then
@@ -50,21 +53,25 @@ if [[ -e "Makefile" ]]; then
 else
   echo "Creating Makefile"
   cat <<EOF > Makefile
-mine: ${haskname}
-	runhaskell ${haskname} < input-mine.txt
-
-small: ${haskname}
-	runhaskell ${haskname} < input-small.txt
-
-pymine: ${pyname}
+pmine: ${pyname}
 	python3 ${pyname} < input-mine.txt
 
-pysmall: ${pyname}
+psmall: ${pyname}
 	python3 ${pyname} < input-small.txt
 
+pmined: ${pyname}
+	loopwait 'python3 \$< -d < input-mine.txt' \$<
 
+psmalld: ${pyname}
+	loopwait 'python3 \$< -d < input-small.txt' \$<
 
-opt: ${execname}
+mined: ${haskname}
+	loopwait 'runhaskell \$< < input-mine.txt' \$<
+
+smalld: ${haskname}
+	loopwait 'runhaskell \$< < input-small.txt' \$<
+
+optmine: ${execname}
 	./${execname} < input-mine.txt
 
 optsmall: ${execname}
@@ -102,5 +109,5 @@ if [[ $ret -eq 1 ]]; then
 fi
 
 echo "Initial adding of files in git."
-git add AoC.hs ${haskname} ${pyname} Makefile input-small.txt 
+git add AoC.hs AoC.py ${haskname} ${pyname} Makefile input-small.txt 
 git ci -m "Initial commit for $execname"

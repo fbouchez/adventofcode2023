@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 import sys
+from AoC import *
 
 res1 = 0
 res2 = 0
