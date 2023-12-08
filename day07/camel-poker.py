@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import functools
+from enum import Enum
 from AoC import *
 
 res1 = 0
@@ -19,6 +20,15 @@ def idx(c):
         return ordering_p1.index(c)
     else:
         return ordering_p2.index(c)
+
+
+## Tentative d'utilisation d'enum : quelle horreur !
+slist = ['High', 'Pair', 'DoublePair', 'Brelan', 'Full', 'Carre', 'Five']
+Strength = Enum('Strength', slist)
+
+Strength.__lt__ = lambda self, x: slist.index(str(self).split('.')[1]) < slist.index(str(x).split('.')[1])
+
+debug ("Carre < Five :", Strength.Carre < Strength.Five )
 
 # Just to be safe, we implement only __eq__ and __lt__ and all other
 # comparison functions will be defined
