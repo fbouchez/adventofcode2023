@@ -271,6 +271,10 @@ numberStr = do
     num <- T.many1 (T.satisfy isDigit)
     return (neg:num)
 
+-- parses a list of number
+numberList :: T.ReadP [Int]
+numberList = T.sepBy1 number commaSep
+
 
 -- parses just a line return
 lineReturn = T.satisfy (=='\n')
@@ -306,11 +310,21 @@ dashRange :: T.ReadP (Int, Int)
 dashRange = genRange "-"
 
 
+-- parses something significant followed by something insignificant
+closedBy p f = do
+    x <- p
+    f
+    return x
+
+-- parses either a finishing line return or not, then the end-of-file
+endOfInput = (T.optional lineReturn) >> T.eof
+
+
 -- gets a parser and apply it to the contents in stdin
 -- returning the first match
 parseContents parser = do
     contents <- getContents
-    let dat = T.readP_to_S parser contents
+    let dat = T.readP_to_S (parser `closedBy` endOfInput) contents
     return $ fst . head $ dat
 
 -----------------------

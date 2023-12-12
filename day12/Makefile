@@ -23,7 +23,7 @@ optsmall: hot-springs
 	./hot-springs < input-small.txt
 
 hot-springs: hot-springs.hs
-	ghc -O2  -o hot-springs
+	ghc -O2 $<  -o hot-springs
 
 clean:
 	haskell-clean-aux
