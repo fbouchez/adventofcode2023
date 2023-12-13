@@ -59,7 +59,7 @@ main = do
 duplicSpring (record, val) = (recx5, valx5)
   where _:recx5 = x5 ('?':record)
         valx5 = x5 val
-        x5 l = concat $ replicate 5 l
+        x5 = concat . replicate 5
 
 
 
