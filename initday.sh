@@ -78,7 +78,7 @@ optsmall: ${execname}
 	./${execname} < input-small.txt
 
 ${execname}: ${haskname}
-	ghc -O2 ${hasname} -o ${execname}
+	ghc -O2 \$< -o \$@
 
 clean:
 	haskell-clean-aux
