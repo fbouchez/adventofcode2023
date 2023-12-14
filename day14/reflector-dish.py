@@ -17,6 +17,16 @@ NROWS = len(chmap)
 NCOLS = len(chmap[0])
 
 
+def north_load(chmap):
+    x = 0
+    for r in range(NROWS):
+        for c in range(NCOLS):
+            if chmap[r][c] == 'O':
+                x += (NROWS - r)
+    return x
+
+
+
 def tilt_north_south_rocks(chmap, d = 'N'):
 # def move_north_south_rocks(chmap, r, d='N'):
 
@@ -25,63 +35,76 @@ def tilt_north_south_rocks(chmap, d = 'N'):
         st = 0
         end = NROWS
     else:
+        dir_r = 1
         st = NROWS-1
         end = -1
-        dir_r = 1
 
-    # for c in range(NCOLS):
     for r in range(st, end, -dir_r):
         for c in range(NCOLS):
             ch = chmap[r][c]
             if ch == 'O':
-                move_1rock(chmap, r, c, -1, 0)
+                move_1rock(chmap, r, c, dir_r, 0)
+
+
+def tilt_west_east_rocks(chmap, d = 'W'):
+
+    if d == 'W':
+        dir_c = -1
+        st = 0
+        end = NCOLS
+    else:
+        dir_c = 1
+        st = NCOLS-1
+        end = -1
+
+    for c in range(st, end, -dir_c):
+        for r in range(NROWS):
+            ch = chmap[r][c]
+            if ch == 'O':
+                move_1rock(chmap, r, c, 0, dir_c)
+
 
 
 def move_1rock(chmap, r, c, dir_r, dir_c):
     global res1
-    while r>0 and c>0 and r<NROWS-1 and c<NCOLS-1:
-        chup = chmap[r+dir_r][c+dir_c]
+    rd = r+dir_r
+    cd = c+dir_c
+
+    while rd>=0 and cd>=0 and rd<=NROWS-1 and cd<=NCOLS-1:
+        chup = chmap[rd][cd]
         if chup == '#' or chup == 'O':
             # on arrête et on en profite pour calculer
             # le résultat de la partie 1 après la boucle
             break
         assert chup == '.'
         chmap[r][c] = '.'
-        chmap[r+dir_r][c+dir_c] = 'O'
+        chmap[rd][cd] = 'O'
 
-        r += dir_r
-        c += dir_c
+        r = rd
+        c = cd
+        rd = r+dir_r
+        cd = c+dir_c
 
     # res1 += (NROWS - r)
 
 
 def tilt_north(chmap):
-    for r in range(NROWS):
-        move_north_rocks(chmap, r)
+    tilt_north_south_rocks(chmap, 'N')
 
+def tilt_south(chmap):
+    tilt_north_south_rocks(chmap, 'S')
 
-def move_north_rocks(chmap, r):
-    for c in range(NCOLS):
-        ch = chmap[r][c]
-        if ch == 'O':
-            move_north_1rock(chmap, r, c)
+def tilt_west(chmap):
+    tilt_west_east_rocks(chmap, 'W')
 
-def move_north_1rock(chmap, r, c):
-    global res1
-    while r>0:
-        chup = chmap[r-1][c]
-        if chup == '#' or chup == 'O':
-            # on arrête et on en profite pour calculer
-            # le résultat de la partie 1 après la boucle
-            break
-        assert chup == '.'
-        chmap[r][c] = '.'
-        chmap[r-1][c] = 'O'
-        r -= 1
+def tilt_east(chmap):
+    tilt_west_east_rocks(chmap, 'E')
 
-    res1 += (NROWS - r)
-
-
+def tilt_cycle(chmap):
+    tilt_north(chmap)
+    tilt_west(chmap)
+    tilt_south(chmap)
+    tilt_east(chmap)
 
 def map_in_marbre(chmap):
     return tuple(map(tuple, chmap))
@@ -89,13 +112,69 @@ def map_in_marbre(chmap):
 
 
 debugcharmap(chmap)
-tilt_north(chmap)
 
-print('='*39)
+cycles = 0
+
+memory = {
+    map_in_marbre(chmap): 0
+}
+
+longueur_cycle = None
+init_cycle = None
+
+while True:
+    tilt_cycle(chmap)
+    cycles += 1
+    mm = map_in_marbre(chmap)
+
+    # debugcharmap(mm)
+
+    if mm in memory:
+        print('='*39)
+        print("YOUHOUUU", cycles)
+
+        prev_cycle = memory[mm]
+        debugcharmap(mm)
+
+        print("vu pour la dernière fois:", prev_cycle)
+
+        longueur_cycle = cycles - prev_cycle
+        init_cycle = prev_cycle
+
+        break
+
+    memory[mm] = cycles
+
+
+
+target = 1_000_000_000
+
+nb_cycle = (target - init_cycle) // longueur_cycle
+
+reste = target - init_cycle - (nb_cycle * longueur_cycle)
+
+for _ in range(reste):
+    tilt_cycle(chmap)
+
+print("Etat final:")
 debugcharmap(chmap)
 
-print(map_in_marbre(chmap))
 
+
+
+
+
+
+# tilt_cycle(chmap)
+# print('='*39)
+# debugcharmap(chmap)
+#
+
+
+# print(map_in_marbre(chmap))
+#
+
+res2 = north_load(chmap)
 
 print ("Valeur partie 1:", res1)
 print ("Valeur partie 2:", res2)
