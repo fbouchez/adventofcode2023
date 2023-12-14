@@ -13,9 +13,11 @@ for line in sys.stdin:
     chmap.append(list(line))
 
 
+initial_copy = list(map(list,chmap))
+
+
 NROWS = len(chmap)
 NCOLS = len(chmap[0])
-
 
 def north_load(chmap):
     x = 0
@@ -131,12 +133,12 @@ while True:
 
     if mm in memory:
         print('='*39)
-        print("YOUHOUUU", cycles)
+        print("Cycle trouvé au temps", cycles)
 
         prev_cycle = memory[mm]
         debugcharmap(mm)
 
-        print("vu pour la dernière fois:", prev_cycle)
+        print("Vu pour la dernière fois au temps", prev_cycle)
 
         longueur_cycle = cycles - prev_cycle
         init_cycle = prev_cycle
@@ -150,8 +152,9 @@ while True:
 target = 1_000_000_000
 
 nb_cycle = (target - init_cycle) // longueur_cycle
-
 reste = target - init_cycle - (nb_cycle * longueur_cycle)
+
+print(f"Target: {target} = init {init_cycle} + {nb_cycle}x{longueur_cycle} + {reste}")
 
 for _ in range(reste):
     tilt_cycle(chmap)
@@ -173,6 +176,9 @@ debugcharmap(chmap)
 
 # print(map_in_marbre(chmap))
 #
+
+tilt_north(initial_copy)
+res1 = north_load(initial_copy)
 
 res2 = north_load(chmap)
 
