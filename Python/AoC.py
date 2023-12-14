@@ -19,3 +19,11 @@ args = parser.parse_args()
 
 def parseInts(l, sep=' '):
     return [int(x) for x in l.split(sep)]
+
+
+
+def debugcharmap(cm):
+    for row in cm:
+        debug(''.join(row))
+
+
