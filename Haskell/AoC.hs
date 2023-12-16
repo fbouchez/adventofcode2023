@@ -320,12 +320,14 @@ closedBy p f = do
 endOfInput = (T.optional lineReturn) >> T.eof
 
 
+parseContents parser = getContents >>= applyParser parser
+
 -- gets a parser and apply it to the contents in stdin
 -- returning the first match
-parseContents parser = do
-    contents <- getContents
+applyParser parser contents = do
     let dat = T.readP_to_S (parser `closedBy` endOfInput) contents
     return $ fst . head $ dat
+
 
 -----------------------
 --

@@ -34,7 +34,9 @@ part2 = False
 data Initseq = Minus String | Equal String Int deriving (Show)
 
 
-parseInput = parseInitSeq `sepBy1` commaSep
+parsePart1 = (munch1 ((/=) ',')) `sepBy1` commaSep
+
+parsePart2 = parseInitSeq `sepBy1` commaSep
 
 
 parseInitSeq = do
@@ -54,21 +56,25 @@ parseRest = do
 
 main :: IO ()
 main = do
-    dat <- parseContents parseInput
-    print dat
+    contents <- getContents
+
+    dat1 <- applyParser parsePart1 contents
+    dat2 <- applyParser parsePart2 contents
+    print dat1
+    print dat2
 
     print $ "HASH" ++ show (hash "HASH")
 
-    -- putStr "Résultat partie 1 : "
-    -- print $ sum $ map hash dat
 
-    let boxes = applyInitSequence dat
+    let boxes = applyInitSequence dat2
 
     putStr "Boites partie 2 : "
     print $ boxes
 
     let res2 = calculFinal boxes
 
+    putStr "Résultat partie 1 : "
+    print $ sum $ map hash dat1
     putStr "Résultat partie 2 : "
     print $ res2
 
@@ -118,7 +124,7 @@ applyInitSequence initlist = accumArray accFunc [] (0,255) seqlist
 
 calculFinal = sum . map (snd . compute1box) . assocs
 
-compute1box (box_idx, box) = traceShowId $ foldl accu (1, 0) box
+compute1box (box_idx, box) = foldl accu (1, 0) box
   where
     box_nb = box_idx + 1
     accu (cur_slot, cur_value) (_, foc) =
