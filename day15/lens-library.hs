@@ -26,17 +26,115 @@ import Text.Printf
 -- import Text.Scanf
 
 
-
 -- If part1 and part2 are very different,
 -- toggle which part to compute with this flag.
 part2 = False
 
-parseInput = do
-    nums <- sepBy1 number skipSpaces
-    eof
-    return nums
+
+data Initseq = Minus String | Equal String Int deriving (Show)
+
+
+parseInput = parseInitSeq `sepBy1` commaSep
+
+
+parseInitSeq = do
+    w <- word
+    mayb <- parseRest
+    case mayb of
+      Nothing -> return $ Minus w
+      Just i  -> return $ Equal w i
+
+parseRest = do
+    (char '=' >> number >>= return . Just) <|> (char '-' >> return Nothing)
+
+
+
+
+
 
 main :: IO ()
 main = do
     dat <- parseContents parseInput
     print dat
+
+    print $ "HASH" ++ show (hash "HASH")
+
+    -- putStr "Résultat partie 1 : "
+    -- print $ sum $ map hash dat
+
+    let boxes = applyInitSequence dat
+
+    putStr "Boites partie 2 : "
+    print $ boxes
+
+    let res2 = calculFinal boxes
+
+    putStr "Résultat partie 2 : "
+    print $ res2
+
+
+
+
+hash = hash' 0
+
+
+hash' cur [] = cur
+hash' cur (c:cs) = hash' new_cur cs
+  where
+    new_cur = ((cur + asciicode) * 17) `mod` 256
+    asciicode = ord c
+
+
+
+
+applyInitSequence :: [Initseq] -> Array Int [(String, Int)]
+applyInitSequence initlist = accumArray accFunc [] (0,255) seqlist
+  where
+    seqlist = traceShowId $ map computeAssoc initlist
+    computeAssoc (Minus lbl) = (hash lbl, Minus lbl)
+    computeAssoc (Equal lbl foc) = (hash lbl, Equal lbl foc)
+
+    accFunc :: [(String, Int)] -> Initseq -> [(String, Int)]
+    accFunc old (Minus lbl) = filter (((/=) lbl) . fst) old
+
+    accFunc [] (Equal lbl foc) = [(lbl, foc)]
+    accFunc ((l,f):lenses) init@(Equal lbl foc)
+      | l == lbl  = (l, foc):lenses
+      | otherwise = (l,f) : accFunc lenses init
+
+   
+-- do
+    -- let boxes = listArray (0,255) [ [] | _ <- [0..255]] :: Array Int [Int]
+--
+    -- aux boxes initlist
+
+
+
+-- aux boxes [] = calculFinal boxes
+-- aux boxes (seq:seqs) = aux boxes' seqs
+  -- where
+    -- boxes' = applySequence boxes
+--
+
+calculFinal = sum . map (snd . compute1box) . assocs
+
+compute1box (box_idx, box) = traceShowId $ foldl accu (1, 0) box
+  where
+    box_nb = box_idx + 1
+    accu (cur_slot, cur_value) (_, foc) =
+      (cur_slot+1, cur_value + box_nb * cur_slot * foc)
+
+
+
+--
+--
+-- applySequence boxes (Minus w) = boxes'
+  -- where
+    -- boxes' = boxes//(hash w)
+
+
+
+
+
+
+
