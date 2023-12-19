@@ -162,7 +162,7 @@ def explore_get_max(r, c, d, curmax):
 
     explore(r, c, d)
     cur = compute_sol()
-    print("Solution pour", r, c, d, cur)
+    # print("Solution pour", r, c, d, cur)
 
     if cur > curmax:
         print("plus grand", cur)
@@ -198,6 +198,9 @@ def compute_sol():
     return res
 
 
+initshadowmap()
+explore(0,0,'E')
+res1 = compute_sol()
 print ("Valeur partie 1:", res1)
 
 res2 = explore_all()
