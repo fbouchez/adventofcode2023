@@ -22,8 +22,68 @@ def parseInts(l, sep=' '):
 
 
 
+def scan_char_map():
+    chmap = []
+
+    NCOLS = None
+
+    for line in sys.stdin:
+        line = line.strip()
+        if not NCOLS:
+            NCOLS = len(line)
+        else:
+            assert NCOLS == len(line)
+        chmap.append(list(line))
+
+    NROWS = len(chmap)
+
+    return chmap, NROWS, NCOLS
+
+
+
+
+
 def debugcharmap(cm):
     for row in cm:
         debug(''.join(row))
+
+
+
+def next_in_dir(row, col, d):
+    dr, dc = delta_coord[d]
+    nrow = row + dr
+    ncol = col + dc
+    return nrow, ncol
+
+
+
+
+conv = {
+    '.': (),
+    '-': ('W','E'),
+    '|': ('N','S'),
+    '7': ('W','S'),
+    'J': ('N','W'),
+    'F': ('E','S'),
+    'L': ('N','E'),
+    'S': ('N','S','E','W')
+}
+
+opposite = {
+    'N': 'S',
+    'S': 'N',
+    'E': 'W',
+    'W': 'E'
+}
+
+delta_coord = {
+    'N': (-1, 0),
+    'S': ( 1, 0),
+    'E': (0,  1),
+    'W': (0, -1),
+}
+
+
+directions = opposite.keys()
 
 
